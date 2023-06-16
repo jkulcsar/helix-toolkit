@@ -2,12 +2,15 @@
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using HelixToolkit.Wpf;
+using HelixToolkit.Wpf.SharpDX;
 using _3DTools;
 using MugenMvvmToolkit.ViewModels;
 using MugenMvvmToolkit.Models;
 using System.Collections.ObjectModel;
 using System;
+using System.IO;
+using System.Windows;
+using Microsoft.Win32;
 using MugenMvvmToolkit;
 
 namespace ThreeDLineDemo
@@ -53,7 +56,7 @@ namespace ThreeDLineDemo
             }
             */
 
-            var lines = GenerateRandomScratchLinesOnSphere(10000, 1, 0.01);
+            var lines = GenerateRandomScratchLinesOnSphere(500000, 1, 0.01);
             LinesGroup.Clear();
 
             foreach (var line in lines)
@@ -61,6 +64,7 @@ namespace ThreeDLineDemo
                 LinesGroup.Add(line);
             }
 
+            ExportToObj(lines);
         }
 
         private void DrawPolylines()
@@ -95,9 +99,12 @@ namespace ThreeDLineDemo
             {
                 LinesGroup.Add(polyline);
             }
+            
+            ExportToObj(polylines);
         }
 
-        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomDepthLinesOnSphere(int numLines, double radius, double lineLength)
+        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomDepthLinesOnSphere(int numLines, double radius,
+            double lineLength)
         {
             var random = new Random();
             var lines = new List<ScreenSpaceLines3D>();
@@ -127,7 +134,8 @@ namespace ThreeDLineDemo
             return lines;
         }
 
-        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomScratchLinesOnSphere(int numLines, double radius, double lineLength)
+        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomScratchLinesOnSphere(int numLines, double radius,
+            double lineLength)
         {
             var random = new Random();
             var lines = new List<ScreenSpaceLines3D>();
@@ -158,7 +166,8 @@ namespace ThreeDLineDemo
             return lines;
         }
 
-        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomPolylinesAroundCube(int numPolylines, double sideLength)
+        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomPolylinesAroundCube(int numPolylines,
+            double sideLength)
         {
             var random = new Random();
             var polylines = new List<ScreenSpaceLines3D>();
@@ -205,7 +214,8 @@ namespace ThreeDLineDemo
             return polylines;
         }
 
-        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomPolylinesOnCube(int numPolylines, double sideLength, double scratchLength)
+        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomPolylinesOnCube(int numPolylines,
+            double sideLength, double scratchLength)
         {
             var random = new Random();
             var polylines = new List<ScreenSpaceLines3D>();
@@ -354,7 +364,8 @@ namespace ThreeDLineDemo
         //    return lines;
         //}
 
-        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomLinesOnCube(int numLines, double sideLength, double lineLength)
+        private static IEnumerable<ScreenSpaceLines3D> GenerateRandomLinesOnCube(int numLines, double sideLength,
+            double lineLength)
         {
             var random = new Random();
             var lines = new List<ScreenSpaceLines3D>();
@@ -422,7 +433,8 @@ namespace ThreeDLineDemo
             return lines;
         }
 
-        private static List<ScreenSpaceLines3D> GenerateRandomPolylines(int numPolylines, int numPointsPerPolyline, double minX, double maxX, double minY, double maxY)
+        private static List<ScreenSpaceLines3D> GenerateRandomPolylines(int numPolylines, int numPointsPerPolyline,
+            double minX, double maxX, double minY, double maxY)
         {
             var random = new Random();
             var polylines = new List<ScreenSpaceLines3D>();
@@ -449,26 +461,28 @@ namespace ThreeDLineDemo
 
 
 
-private static List<ScreenSpaceLines3D> GenerateCubeFacets(double sideLength, int numPolylines, int numPointsPerPolyline)
-    {
-        var polylines = new List<ScreenSpaceLines3D>();
-
-        // Generate polylines for each facet of the cube
-        for (var face = 0; face < 6; face++)
+        private static List<ScreenSpaceLines3D> GenerateCubeFacets(double sideLength, int numPolylines,
+            int numPointsPerPolyline)
         {
-            var facetPolylines = GenerateRandomPolylines(numPolylines, numPointsPerPolyline, -sideLength / 2, sideLength / 2, -sideLength / 2, sideLength / 2);
+            var polylines = new List<ScreenSpaceLines3D>();
 
-            // Adjust the z-coordinate based on the cube face
-            var zOffset = 0.0;
-            switch (face)
+            // Generate polylines for each facet of the cube
+            for (var face = 0; face < 6; face++)
             {
-                case 0: // Front face
-                    zOffset = sideLength / 2;
-                    break;
+                var facetPolylines = GenerateRandomPolylines(numPolylines, numPointsPerPolyline, -sideLength / 2,
+                    sideLength / 2, -sideLength / 2, sideLength / 2);
 
-                case 1: // Back face
-                    zOffset = -sideLength / 2;
-                    break;
+                // Adjust the z-coordinate based on the cube face
+                var zOffset = 0.0;
+                switch (face)
+                {
+                    case 0: // Front face
+                        zOffset = sideLength / 2;
+                        break;
+
+                    case 1: // Back face
+                        zOffset = -sideLength / 2;
+                        break;
 /*
                 case 2: // Left face
                     facetPolylines = RotatePolylines(facetPolylines, new Vector3D(0, 0, 1), -90);
@@ -486,85 +500,110 @@ private static List<ScreenSpaceLines3D> GenerateCubeFacets(double sideLength, in
                     facetPolylines = RotatePolylines(facetPolylines, new Vector3D(1, 0, 0), -90);
                     break;
 */
-               default:
-                    break;
+                    default:
+                        break;
+                }
+
+                // Translate the polylines to their respective cube face
+                TranslatePolylines(facetPolylines, new Vector3D(0, 0, zOffset));
+
+                polylines.AddRange(facetPolylines);
             }
 
-            // Translate the polylines to their respective cube face
-            TranslatePolylines(facetPolylines, new Vector3D(0, 0, zOffset));
-
-            polylines.AddRange(facetPolylines);
+            return polylines;
         }
 
-        return polylines;
-    }
-
-    private static List<ScreenSpaceLines3D> RotatePolylines(List<ScreenSpaceLines3D> polylines, Vector3D axis, double angle)
-    {
-        var rotatedPolylines = new List<ScreenSpaceLines3D>();
-
-        var rotationTransform = new RotateTransform3D(new AxisAngleRotation3D(axis, angle));
-
-        foreach (var polyline in polylines)
+        private static List<ScreenSpaceLines3D> RotatePolylines(List<ScreenSpaceLines3D> polylines, Vector3D axis,
+            double angle)
         {
-            var transformedPoints = new List<Point3D>();
-            foreach (var point in polyline.Points)
+            var rotatedPolylines = new List<ScreenSpaceLines3D>();
+
+            var rotationTransform = new RotateTransform3D(new AxisAngleRotation3D(axis, angle));
+
+            foreach (var polyline in polylines)
             {
-                var transformedPoint = rotationTransform.Transform(point);
-                transformedPoints.Add(transformedPoint);
-            }
+                var transformedPoints = new List<Point3D>();
+                foreach (var point in polyline.Points)
+                {
+                    var transformedPoint = rotationTransform.Transform(point);
+                    transformedPoints.Add(transformedPoint);
+                }
 
 
                 var rotatedPolyline = new ScreenSpaceLines3D
-            {
-                Points = new Point3DCollection(transformedPoints),
-                Color = polyline.Color
-            };
+                {
+                    Points = new Point3DCollection(transformedPoints),
+                    Color = polyline.Color
+                };
 
-            rotatedPolylines.Add(rotatedPolyline);
+                rotatedPolylines.Add(rotatedPolyline);
+            }
+
+            return rotatedPolylines;
         }
 
-        return rotatedPolylines;
-    }
 
-      
 
         private static void TranslatePolylines(List<ScreenSpaceLines3D> polylines, Vector3D translation)
-    {
-        var translationTransform = new TranslateTransform3D(translation);
-
-        foreach (var polyline in polylines)
         {
-            for (var i = 0; i < polyline.Points.Count; i++)
+            var translationTransform = new TranslateTransform3D(translation);
+
+            foreach (var polyline in polylines)
             {
-                polyline.Points[i] = translationTransform.Transform(polyline.Points[i]);
+                for (var i = 0; i < polyline.Points.Count; i++)
+                {
+                    polyline.Points[i] = translationTransform.Transform(polyline.Points[i]);
+                }
+            }
+        }
+
+
+        //private static List<List<Point>> GenerateRandomPolylines(int numPolylines, int numPointsPerPolyline, double minX, double maxX, double minY, double maxY)
+        //{
+        //    var random = new Random();
+        //    var polylines = new List<List<Point>>();
+
+        //    for (var i = 0; i < numPolylines; i++)
+        //    {
+        //        var polyline = new List<Point>();
+
+        //        for (var j = 0; j < numPointsPerPolyline; j++)
+        //        {
+        //            var x = random.NextDouble() * (maxX - minX) + minX;
+        //            var y = random.NextDouble() * (maxY - minY) + minY;
+        //            var point = new Point(x, y);
+        //            polyline.Add(point);
+        //        }
+
+        //        polylines.Add(polyline);
+        //    }
+
+        //    return polylines;
+        //}
+        
+        private static void ExportToObj(IEnumerable<ScreenSpaceLines3D> lines)
+        {
+            var dialog = new SaveFileDialog
+            {
+                DefaultExt = ".obj",
+                Filter = "OBJ files (*.obj)|*.obj|All files (*.*)|*.*"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var path = dialog.FileName;
+
+                using (var writer = new StreamWriter(path))
+                {
+                    foreach (var line in lines)
+                    {
+                        writer.WriteLine($"v {line.Points[0].X} {line.Points[0].Y} {line.Points[0].Z}");
+                        writer.WriteLine($"v {line.Points[1].X} {line.Points[1].Y} {line.Points[1].Z}");
+                    }
+                }
+
+                MessageBox.Show("OBJ file exported successfully.");
             }
         }
     }
-
-
-    //private static List<List<Point>> GenerateRandomPolylines(int numPolylines, int numPointsPerPolyline, double minX, double maxX, double minY, double maxY)
-    //{
-    //    var random = new Random();
-    //    var polylines = new List<List<Point>>();
-
-    //    for (var i = 0; i < numPolylines; i++)
-    //    {
-    //        var polyline = new List<Point>();
-
-    //        for (var j = 0; j < numPointsPerPolyline; j++)
-    //        {
-    //            var x = random.NextDouble() * (maxX - minX) + minX;
-    //            var y = random.NextDouble() * (maxY - minY) + minY;
-    //            var point = new Point(x, y);
-    //            polyline.Add(point);
-    //        }
-
-    //        polylines.Add(polyline);
-    //    }
-
-    //    return polylines;
-    //}
-
-}
 }
