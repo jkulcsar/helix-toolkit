@@ -8,6 +8,7 @@ using MugenMvvmToolkit.ViewModels;
 using MugenMvvmToolkit.Models;
 using System.Collections.ObjectModel;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using Microsoft.Win32;
@@ -99,7 +100,7 @@ namespace ThreeDLineDemo
             {
                 LinesGroup.Add(polyline);
             }
-            
+
             ExportToObj(polylines);
         }
 
@@ -580,7 +581,7 @@ namespace ThreeDLineDemo
 
         //    return polylines;
         //}
-        
+
         private static void ExportToObj(IEnumerable<ScreenSpaceLines3D> lines)
         {
             var dialog = new SaveFileDialog
@@ -595,10 +596,21 @@ namespace ThreeDLineDemo
 
                 using (var writer = new StreamWriter(path))
                 {
+                    int vertexIndex = 1;
                     foreach (var line in lines)
                     {
-                        writer.WriteLine($"v {line.Points[0].X} {line.Points[0].Y} {line.Points[0].Z}");
-                        writer.WriteLine($"v {line.Points[1].X} {line.Points[1].Y} {line.Points[1].Z}");
+                        foreach (var point in line.Points)
+                        {
+                            writer.WriteLine(
+                                $"v {point.X.ToString(CultureInfo.InvariantCulture)} {point.Y.ToString(CultureInfo.InvariantCulture)} {point.Z.ToString(CultureInfo.InvariantCulture)}");
+                        }
+
+                        for (int i = 0; i < line.Points.Count - 1; i++)
+                        {
+                            writer.WriteLine($"l {vertexIndex + i} {vertexIndex + i + 1}");
+                        }
+
+                        vertexIndex += line.Points.Count;
                     }
                 }
 
