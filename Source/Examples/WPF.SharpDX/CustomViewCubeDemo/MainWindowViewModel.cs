@@ -1,10 +1,14 @@
 ﻿using HelixToolkit.Wpf.SharpDX;
+using HelixToolkit.SharpDX;
 using SharpDX;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
+using System.Windows.Media;
 
 namespace CustomViewCubeDemo
 {
@@ -40,16 +44,27 @@ namespace CustomViewCubeDemo
 
         private void InitializeModels()
         {
-            var builder = new MeshBuilder();
-            builder.AddBox(Vector3.Zero, 1, 1, 1);
-            var reader = new ObjReader();
-            var models = reader.Read("bunny.obj");
-            Geometry = models[0].Geometry;
-            Material = PhongMaterials.Red;
+            try
+            {
+                var builder = new MeshBuilder();
+                builder.AddBox(Vector3.Zero, 1, 1, 1);
+                //var reader = new ObjReader();
+                //var models = reader.Read("random_polylines.obj");
+                //Geometry = models[0].Geometry;
+                //Material = PhongMaterials.Red;
 
-            builder = new MeshBuilder();
-            builder.AddBox(new Vector3(0, 0, -4), 2, 2, 6);
-            RectGeometry = builder.ToMeshGeometry3D();
+                var reader = new HelixToolkit.SharpDX.Core.Assimp.Importer();
+                var models = reader.Load(@"random_polylines.obj");
+
+
+                builder = new MeshBuilder();
+                builder.AddBox(new Vector3(0, 0, -4), 2, 2, 6);
+                RectGeometry = builder.ToMeshGeometry3D();
+            }
+            catch (Exception e)
+            {
+                System.Windows.MessageBox.Show(e.Message);
+            }
         }
 
         private void InitializeViewCubes()
@@ -88,5 +103,34 @@ namespace CustomViewCubeDemo
             CoordinateText.TextInfo.Add(new TextInfo("Y", Vector3.UnitY * 6));
             CoordinateText.TextInfo.Add(new TextInfo("Z", Vector3.UnitZ * 6));
         }
+
+        private LineGeometry3D GenerateRandomPolylines(
+            int numPolylines,
+            int numPointsPerPolyline,
+            double minX,
+            double maxX,
+            double minY,
+            double maxY)
+        {
+            var random = new Random();
+            var polylines = new LineBuilder();
+
+            for (var i = 0; i < numPolylines; i++)
+            {
+                for (var j = 0; j < numPointsPerPolyline; j++)
+                {
+                    var x = random.NextDouble() * (maxX - minX) + minX;
+                    var y = random.NextDouble() * (maxY - minY) + minY;
+                    var z = 0.0; // Set the z-coordinate to 0 for a 2D polyline
+                    var point = new Point3D(x, y, z);
+                    polylines.AddLine(x, y, z);
+                }
+
+                polylines.Add(polyline);
+            }
+
+            return polylines;
+        }
+
     }
 }

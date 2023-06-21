@@ -47,6 +47,9 @@
     <Reference Include="3DTools">
       <HintPath>..\..\..\..\Components\3DTools.dll</HintPath>
     </Reference>
+    <Reference Include="HelixToolkit.Wpf.SharpDX">
+      <HintPath>..\..\..\..\..\..\..\.nuget\packages\helixtoolkit.wpf.sharpdx\2.24.0\lib\net462\HelixToolkit.Wpf.SharpDX.dll</HintPath>
+    </Reference>
     <Reference Include="Petzold.Media3D">
       <HintPath>..\..\..\..\Components\Petzold.Media3D.dll</HintPath>
     </Reference>
@@ -1068,6 +1071,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX">
+      <Version>2.24.0</Version>
+    </PackageReference>
     <PackageReference Include="NAudio">
       <Version>1.10.0</Version>
     </PackageReference>

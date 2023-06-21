@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using HelixToolkit.Wpf.SharpDX.Utilities;
+
 namespace PointsAndLinesDemo
 {
     using System;
@@ -33,6 +35,8 @@ namespace PointsAndLinesDemo
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
     public partial class MainWindow : INotifyPropertyChanged
     {
+        static NVOptimusEnabler nvOptimusEnabler = new NVOptimusEnabler();
+        
         private readonly Stopwatch watch = new Stopwatch();
 
         private int numberOfPoints;

@@ -91,16 +91,32 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="cube_003_lines.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="random_polylines.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="sphere_003_100K_lines.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wall12.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\HelixToolkit.SharpDX.Core.Assimp\HelixToolkit.SharpDX.Core.Assimp.csproj">
+      <Project>{24b939fb-0696-472f-90a5-84cc393ead0c}</Project>
+      <Name>HelixToolkit.SharpDX.Core.Assimp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\HelixToolkit.Wpf.SharpDX\HelixToolkit.Wpf.SharpDX.csproj">
       <Project>{39740654-f5f1-4936-b4ea-9bc97d4cde37}</Project>
       <Name>HelixToolkit.Wpf.SharpDX</Name>
