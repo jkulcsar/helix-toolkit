@@ -1,14 +1,7 @@
 ﻿using HelixToolkit.Wpf.SharpDX;
-using HelixToolkit.SharpDX;
 using SharpDX;
 using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
-using System.Windows.Media;
 
 namespace CustomViewCubeDemo
 {
@@ -25,6 +18,8 @@ namespace CustomViewCubeDemo
         public Material ViewCubeMaterial4 { private set; get; }
         public LineGeometry3D Coordinate { private set; get; }
         public BillboardText3D CoordinateText { private set; get; }
+
+        public Geometry3D RandomPolylines { private set; get; }
 
         public System.Windows.Media.Media3D.Transform3D ViewCubeTransform3 { private set; get; }
 
@@ -53,9 +48,16 @@ namespace CustomViewCubeDemo
                 //Geometry = models[0].Geometry;
                 //Material = PhongMaterials.Red;
 
-                var reader = new HelixToolkit.SharpDX.Core.Assimp.Importer();
-                var models = reader.Load(@"random_polylines.obj");
+                //var reader = new HelixToolkit.SharpDX.Core.Assimp.Importer();
+                //var models = reader.Load(@"random_polylines.obj");
 
+                var numPolylines = 500000;
+                var pointsPerPolyline = 10;
+                var xRange = 100f;
+                var yRange = 100f;
+                var zRange = 100f;
+                var filename = "random_polylines.obj";
+                RandomPolylines = GenerateRandomPolylines(numPolylines, pointsPerPolyline, xRange, yRange, zRange, filename);
 
                 builder = new MeshBuilder();
                 builder.AddBox(new Vector3(0, 0, -4), 2, 2, 6);
@@ -104,6 +106,7 @@ namespace CustomViewCubeDemo
             CoordinateText.TextInfo.Add(new TextInfo("Z", Vector3.UnitZ * 6));
         }
 
+        /*
         private LineGeometry3D GenerateRandomPolylines(
             int numPolylines,
             int numPointsPerPolyline,
@@ -131,6 +134,50 @@ namespace CustomViewCubeDemo
 
             return polylines;
         }
+        */
+
+
+
+
+        public MeshGeometry3D GenerateRandomPolylines(int numPolylines, int pointsPerPolyline, float xRange, float yRange, float zRange, string filename)
+        {
+            var random = new Random();
+            var polylines = new Vector3[numPolylines, pointsPerPolyline];
+
+            for (var i = 0; i < numPolylines; i++)
+            {
+                var startPoint = new Vector3(random.NextFloat(-xRange, xRange), random.NextFloat(-yRange, yRange), random.NextFloat(-zRange, zRange));
+                for (var j = 0; j < pointsPerPolyline - 1; j++)
+                {
+                    polylines[i, j] = new Vector3(random.NextFloat(-xRange, xRange), random.NextFloat(-yRange, yRange), random.NextFloat(-zRange, zRange));
+                }
+                // Set end point to start point to close the polyline
+                polylines[i, pointsPerPolyline - 1] = startPoint;
+            }
+
+            var builder = new MeshBuilder();
+            for (var i = 0; i < numPolylines; i++)
+            {
+                var polyline = new Vector3Collection();
+                for (var j = 0; j < pointsPerPolyline; j++)
+                {
+                    polyline.Add(polylines[i, j]);
+                }
+                builder.AddTube(polyline, 0.1f, 5, false);
+            }
+
+            var mesh = builder.ToMeshGeometry3D();
+
+            // TODO: Export mesh to obj file
+            var exporter = new ObjExporter(filename);
+            exporter.ExportMesh(mesh, Matrix.Identity);
+
+            return mesh;
+        }
+
 
     }
 }
+
+
+

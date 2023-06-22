@@ -11,6 +11,7 @@ namespace FileLoadDemo
 {
     using HelixToolkit.Wpf.SharpDX;
     using HelixToolkit.Wpf.SharpDX.Model.Scene;
+    using HelixToolkit.Wpf.SharpDX.Utilities;
     using System.Windows;
 
     /// <summary>
@@ -18,6 +19,8 @@ namespace FileLoadDemo
     /// </summary>
     public partial class MainWindow : Window
     {
+        static NVOptimusEnabler nvOptimusEnabler = new NVOptimusEnabler();
+
         public MainWindow()
         {
             InitializeComponent();

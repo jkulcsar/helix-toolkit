@@ -96,6 +96,7 @@
             </hx:ScreenSpacedGroup3D>
             <hx:MeshGeometryModel3D Geometry="{Binding Geometry}" Material="{Binding Material}" />
             <hx:MeshGeometryModel3D Geometry="{Binding RectGeometry}" Material="{Binding Material}" />
+            <hx:MeshGeometryModel3D Geometry="{Binding RandomPolylines}" Material="{Binding Material}" />
             <!--<hx:LineGeometryModel3D Geometry="{Binding Coordinate}" Color="White">
                 <hx:LineGeometryModel3D.Transform>
                     <TranslateTransform3D OffsetY="2" />

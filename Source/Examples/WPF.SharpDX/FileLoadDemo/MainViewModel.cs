@@ -88,6 +88,11 @@ namespace FileLoadDemo
             get; set;
         }
 
+        public ICommand GenerateFileCommand
+        {
+            get; set;
+        }
+
         public ICommand ResetCameraCommand
         {
             set; get;
@@ -217,6 +222,8 @@ namespace FileLoadDemo
             mainWindow = window;
 
             this.OpenFileCommand = new DelegateCommand(this.OpenFile);
+            this.GenerateFileCommand = new DelegateCommand(this.GenerateRandomFile);
+
             EffectsManager = new DefaultEffectsManager();
             Camera = new OrthographicCamera()
             {
@@ -250,6 +257,17 @@ namespace FileLoadDemo
                     StopAnimation();
                 }
             });
+        }
+
+        private void GenerateRandomFile()
+        {
+            var numPolylines = 10000;
+            var pointsPerPolyline = 5;
+            var xRange = 100f;
+            var yRange = 100f;
+            var zRange = 100f;
+            var filename = "random_polylines.obj";
+            GenerateRandomPolylines(numPolylines, pointsPerPolyline, xRange, yRange, zRange, filename);
         }
 
         private void CopyAsBitmapToClipBoard(Viewport3DX viewport)
@@ -486,6 +504,43 @@ namespace FileLoadDemo
                 }
             }
         }
+
+        public MeshGeometry3D GenerateRandomPolylines(int numPolylines, int pointsPerPolyline, float xRange, float yRange, float zRange, string filename)
+        {
+            var random = new Random();
+            var polylines = new Vector3[numPolylines, pointsPerPolyline];
+
+            for (var i = 0; i < numPolylines; i++)
+            {
+                var startPoint = new Vector3(random.NextFloat(-xRange, xRange), random.NextFloat(-yRange, yRange), random.NextFloat(-zRange, zRange));
+                for (var j = 0; j < pointsPerPolyline - 1; j++)
+                {
+                    polylines[i, j] = new Vector3(random.NextFloat(-xRange, xRange), random.NextFloat(-yRange, yRange), random.NextFloat(-zRange, zRange));
+                }
+                // Set end point to start point to close the polyline
+                polylines[i, pointsPerPolyline - 1] = startPoint;
+            }
+
+            var builder = new MeshBuilder();
+            for (var i = 0; i < numPolylines; i++)
+            {
+                var polyline = new Vector3Collection();
+                for (var j = 0; j < pointsPerPolyline; j++)
+                {
+                    polyline.Add(polylines[i, j]);
+                }
+                builder.AddTube(polyline, 0.01f, 5, false);
+            }
+
+            var mesh = builder.ToMeshGeometry3D();
+
+            // TODO: Export mesh to obj file
+            var exporter = new ObjExporter(filename);
+            exporter.ExportMesh(mesh, Matrix.Identity);
+
+            return mesh;
+        }
+
     }
 
 }
