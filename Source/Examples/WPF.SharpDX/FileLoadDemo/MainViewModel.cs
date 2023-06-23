@@ -261,8 +261,8 @@ namespace FileLoadDemo
 
         private void GenerateRandomFile()
         {
-            var numPolylines = 10000;
-            var pointsPerPolyline = 5;
+            var numPolylines = 100000;
+            var pointsPerPolyline = 4;
             var xRange = 100f;
             var yRange = 100f;
             var zRange = 100f;
@@ -512,13 +512,10 @@ namespace FileLoadDemo
 
             for (var i = 0; i < numPolylines; i++)
             {
-                var startPoint = new Vector3(random.NextFloat(-xRange, xRange), random.NextFloat(-yRange, yRange), random.NextFloat(-zRange, zRange));
-                for (var j = 0; j < pointsPerPolyline - 1; j++)
+                for (var j = 0; j < pointsPerPolyline; j++)
                 {
                     polylines[i, j] = new Vector3(random.NextFloat(-xRange, xRange), random.NextFloat(-yRange, yRange), random.NextFloat(-zRange, zRange));
                 }
-                // Set end point to start point to close the polyline
-                polylines[i, pointsPerPolyline - 1] = startPoint;
             }
 
             var builder = new MeshBuilder();
@@ -529,7 +526,7 @@ namespace FileLoadDemo
                 {
                     polyline.Add(polylines[i, j]);
                 }
-                builder.AddTube(polyline, 0.01f, 5, false);
+                builder.AddPolygon(polyline);
             }
 
             var mesh = builder.ToMeshGeometry3D();
