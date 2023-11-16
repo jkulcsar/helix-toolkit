@@ -150,6 +150,9 @@ namespace FileLoadDemo
         public ObservableCollection<IAnimationUpdater> Animations { get; } = new ObservableCollection<IAnimationUpdater>();
 
         public SceneNodeGroupModel3D GroupModel { get; } = new SceneNodeGroupModel3D();
+        
+        public LineGeometryModel3D LineModel { get; } = new LineGeometryModel3D();
+        
 
         private IAnimationUpdater selectedAnimation = null;
         public IAnimationUpdater SelectedAnimation
@@ -526,7 +529,8 @@ namespace FileLoadDemo
                 {
                     polyline.Add(polylines[i, j]);
                 }
-                builder.AddPolygon(polyline);
+                //builder.AddPolygon(polyline);
+                builder.AddTube(polyline, 0.1, 10, false);
             }
 
             var mesh = builder.ToMeshGeometry3D();

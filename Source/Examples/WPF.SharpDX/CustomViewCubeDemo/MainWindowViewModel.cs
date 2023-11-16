@@ -51,7 +51,7 @@ namespace CustomViewCubeDemo
                 //var reader = new HelixToolkit.SharpDX.Core.Assimp.Importer();
                 //var models = reader.Load(@"random_polylines.obj");
 
-                var numPolylines = 500000;
+                var numPolylines = 50000;
                 var pointsPerPolyline = 10;
                 var xRange = 100f;
                 var yRange = 100f;

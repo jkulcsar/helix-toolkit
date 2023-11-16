@@ -3,6 +3,9 @@
 //   Copyright (c) 2014 Helix Toolkit contributors
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Collections.ObjectModel;
+
 namespace Workitem1349
 {
 
@@ -23,6 +26,8 @@ namespace Workitem1349
         public MeshGeometry3D Model { get; private set; }
         public LineGeometry3D Grid { get; private set; }
 
+        public LineGeometryModel3D Circle { get; set; }
+        
         public SharpDX.Color GridColor { get; private set; }
 
         public Color DirectionalLightColor { get; private set; }
@@ -33,6 +38,9 @@ namespace Workitem1349
             IsDynamic = true
         };
 
+        //public ObservableCollection<LineGeometryModel3D> LineModels { get; set; } = new ObservableCollection<LineGeometryModel3D>();
+        public ObservableCollection<Element3D> LineModels { get; set; } = new ObservableCollection<Element3D>();
+        
         public MainViewModel()
         {
             // titles
@@ -52,6 +60,14 @@ namespace Workitem1349
             this.Grid = LineBuilder.GenerateGrid();
             this.GridColor = SharpDX.Color.Black;
 
+            var theCircle = LineBuilder.GenerateCircile(
+                new Plane(new Vector3(0, 0, 0), 0.5f), 2, 10);
+            
+            Circle = new LineGeometryModel3D { Geometry = theCircle, Color = Colors.Red, Thickness = 0.5, Smoothness = 0.005f};
+            
+            LineModels.Add(Circle);
+            LineModels.Add(new LineGeometryModel3D { Geometry = Grid, Color = Colors.Gray, Thickness = 0.25, Smoothness = 0.005f });
+
             // scene model3d
             var b1 = new MeshBuilder();            
             b1.AddSphere(new Vector3(0, 0, 0), 0.05);
@@ -70,6 +86,18 @@ namespace Workitem1349
             Text3D.TextInfo.Add(new TextInfo("4", new Vector3(4,0,3)) { Foreground = SharpDX.Color.Blue, Scale = scale * 2 });
             Text3D.TextInfo.Add(new TextInfo("5", new Vector3(5,0,3)) { Foreground = SharpDX.Color.Blue, Scale = scale * 2 });
 
+        }
+
+        public void AddLine(LineGeometry3D lineGeometry, Color color)
+        {
+            var lineModel = new LineGeometryModel3D
+            {
+                Geometry = lineGeometry,
+                Color = color,
+                Thickness = 0.5
+            };
+
+            LineModels.Add(lineModel);
         }
     }
 }
